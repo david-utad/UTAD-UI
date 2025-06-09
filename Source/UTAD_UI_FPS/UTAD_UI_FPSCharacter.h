@@ -141,6 +141,12 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Skill Tree", meta = (DisplayName = "Widget"))
   TSubclassOf<USkillTreeWidget> SkillTreeWidget;
 
+  /**
+   * Current available points to unlock skills.
+   */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Skill Tree", meta = (DisplayName = "Available Points"))
+  int32 m_iAvailablePoints;
+
 protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);

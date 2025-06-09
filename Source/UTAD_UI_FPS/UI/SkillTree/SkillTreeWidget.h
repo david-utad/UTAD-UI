@@ -160,9 +160,4 @@ private:
    * Timer to hide the feedback text.
    */
   FTSTicker::FDelegateHandle m_tFeedbackTickerHandle;
-
-  /**
-   * Current available points to unlock skills.
-   */
-  int32 m_iAvailablePoints;
 };

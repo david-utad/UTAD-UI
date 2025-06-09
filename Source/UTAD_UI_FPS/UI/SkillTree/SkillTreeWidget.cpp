@@ -5,13 +5,13 @@
 #include <Kismet/GameplayStatics.h>
 #include <Sound/SoundBase.h>
 #include "SkillBranchWidget.h"
+#include "UTAD_UI_FPS/UTAD_UI_FPSCharacter.h"
 
 void USkillTreeWidget::NativeConstruct()
 {
   Super::NativeConstruct();
   m_pConfirmButton->OnClicked.AddDynamic(this, &USkillTreeWidget::ConfirmSkills);
   m_pCloseButton->OnClicked.AddDynamic(this, &USkillTreeWidget::Hide);
-  m_iAvailablePoints =  5;
   TArray<UWidget*> lWidget = m_pPanel->GetAllChildren();
   USkillBranchWidget* pSkillBranch = nullptr;
   for (UWidget* pWidget : lWidget)
@@ -33,6 +33,7 @@ bool USkillTreeWidget::IsVisible()
 
 void USkillTreeWidget::Show()
 {
+  PlaySound(ESoundType::OpenClose);
   APlayerController* m_pPlayerController = GetOwningPlayer<APlayerController>();
   if (m_pPlayerController != nullptr)
   {
@@ -49,7 +50,6 @@ void USkillTreeWidget::Show()
     m_pFeedbackText->SetVisibility(ESlateVisibility::Collapsed);
   }
   ShowAvailablePoints();
-  PlaySound(ESoundType::OpenClose);
   SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -76,12 +76,22 @@ void USkillTreeWidget::Hide()
 
 bool USkillTreeWidget::IsThereEnoughtPoints(int32 _iCost)
 {
-  return (m_iAvailablePoints >= _iCost);
+  bool bReturn = false;
+  AUTAD_UI_FPSCharacter* pCharacter = Cast< AUTAD_UI_FPSCharacter>(GetOwningPlayer()->GetCharacter());
+  if (pCharacter != nullptr)
+  {
+    bReturn = (pCharacter->m_iAvailablePoints >= _iCost);
+  }
+  return bReturn;
 }
 
 void USkillTreeWidget::ModifyAvailablePoints(int32 _iCost)
 {
-  m_iAvailablePoints += _iCost;
+  AUTAD_UI_FPSCharacter* pCharacter = Cast< AUTAD_UI_FPSCharacter>(GetOwningPlayer()->GetCharacter());
+  if (pCharacter != nullptr)
+  {
+    pCharacter->m_iAvailablePoints += _iCost;
+  }
   ShowAvailablePoints();
 }
 
@@ -89,7 +99,15 @@ void USkillTreeWidget::ShowAvailablePoints()
 {
   if (m_pPointsValueText != nullptr)
   {
-    m_pPointsValueText->SetText(FText::AsNumber(m_iAvailablePoints));
+    AUTAD_UI_FPSCharacter* pCharacter = Cast< AUTAD_UI_FPSCharacter>(GetOwningPlayer()->GetCharacter());
+    if (pCharacter != nullptr)
+    {
+      m_pPointsValueText->SetText(FText::AsNumber(pCharacter->m_iAvailablePoints));
+    }
+    else
+    {
+      m_pPointsValueText->SetText(FText::AsNumber(0));
+    }
   }
 }
 
