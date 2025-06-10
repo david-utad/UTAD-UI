@@ -11,6 +11,14 @@ void USkillTreeWidget::NativeConstruct()
 {
   Super::NativeConstruct();
   m_pConfirmButton->OnClicked.AddDynamic(this, &USkillTreeWidget::ConfirmSkills);
+  if (m_bHeldMode)
+  {
+    m_pConfirmButton->SetVisibility(ESlateVisibility::Collapsed);
+  }
+  else
+  {
+    m_pConfirmButton->SetVisibility(ESlateVisibility::Visible);
+  }
   m_pCloseButton->OnClicked.AddDynamic(this, &USkillTreeWidget::Hide);
   TArray<UWidget*> lWidget = m_pPanel->GetAllChildren();
   USkillBranchWidget* pSkillBranch = nullptr;
@@ -24,6 +32,13 @@ void USkillTreeWidget::NativeConstruct()
     }
   }
   SetVisibility(ESlateVisibility::Hidden);
+}
+
+void USkillTreeWidget::NativeDestruct()
+{
+  Super::NativeDestruct();
+  FTSTicker::GetCoreTicker().RemoveTicker(m_tFeedbackTickerHandle);
+  m_tFeedbackTickerHandle.Reset();
 }
 
 bool USkillTreeWidget::IsVisible()
@@ -142,7 +157,6 @@ void USkillTreeWidget::SetFeedbackText(FText _sFeedbackText)
         m_tFeedbackTickerHandle.Reset();
         return false;
       }), 3.f);
-
   }
 }
 
@@ -164,4 +178,14 @@ void USkillTreeWidget::PlaySound(ESoundType _eType)
       UGameplayStatics::PlaySound2D(GetWorld(), *pSound);
     }
   }
+}
+
+bool USkillTreeWidget::IsInHeldMode()
+{
+  return m_bHeldMode;
+}
+
+double USkillTreeWidget::GetHeldTime()
+{
+  return m_dHeldTime;
 }

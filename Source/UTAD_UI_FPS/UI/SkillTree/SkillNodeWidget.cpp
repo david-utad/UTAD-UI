@@ -7,9 +7,15 @@ void USkillNodeWidget::NativeConstruct()
 {
   Super::NativeConstruct();
   m_tState = ENodeState::UnFocused;
+  m_dMouseDownTime = 0.0;
+  m_bIsMouseHeld = false;
   if (m_pSkillCostText != nullptr)
   {
     m_pSkillCostText->SetText(FText::AsNumber(m_iSkillCost));
+  }
+  if (m_pRoundProgressBar != nullptr)
+  {
+    m_pRoundProgressBar->SetVisibility(ESlateVisibility::Hidden);
   }
 }
 
@@ -50,37 +56,33 @@ void USkillNodeWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 FReply USkillNodeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-  if ((m_tState != ENodeState::Locked) && (m_tState != ENodeState::Acquired))
+  if (m_pSkillTreeWidget != nullptr)
   {
-    if (m_tState == ENodeState::Selected)
+    if ((m_tState != ENodeState::Locked) && (m_tState != ENodeState::Acquired))
     {
-      m_tState = ENodeState::Focused;
-      if (m_pSkillTreeWidget != nullptr)
+      if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
       {
-        m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
-        m_pSkillTreeWidget->PlaySound(ESoundType::Deselect);
+        if (!m_pSkillTreeWidget->IsInHeldMode())
+        {
+          HandleSelectSkill();
+        }
+        else
+        {
+          if (m_pSkillTreeWidget->IsThereEnoughtPoints(m_iSkillCost))
+          {
+            m_dMouseDownTime = FPlatformTime::Seconds();
+            m_bIsMouseHeld = true;
+            m_tHeldTickerHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &USkillNodeWidget::HandleAcquireSkill));
+          }
+          else
+          {
+            m_pSkillTreeWidget->SetFeedbackText(FText::FromString("There isn't enought points to acquire the skill."));
+            m_pSkillTreeWidget->PlaySound(ESoundType::Error);
+          }
+        }
       }
     }
-    else if (m_pSkillTreeWidget->IsThereEnoughtPoints(m_iSkillCost))
-    {
-      m_tState = ENodeState::Selected;
-      if (m_pSkillTreeWidget != nullptr)
-      {
-        m_pSkillTreeWidget->ModifyAvailablePoints(-m_iSkillCost);
-        m_pSkillTreeWidget->PlaySound(ESoundType::Select);
-      }
-    }
-    else if (m_pSkillTreeWidget != nullptr)
-    {
-      m_pSkillTreeWidget->SetFeedbackText(FText::FromString("There isn't enought points to acquire the skill."));
-      m_pSkillTreeWidget->PlaySound(ESoundType::Error);
-    }
-    UpdateVisualState();
-    OnLockNode.Broadcast(m_tState != ENodeState::Selected);
-  }
-  else
-  {
-    if (m_pSkillTreeWidget != nullptr)
+    else
     {
       if (m_tState == ENodeState::Locked)
       {
@@ -97,10 +99,82 @@ FReply USkillNodeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
   return FReply::Handled();
 }
 
+FReply USkillNodeWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+  if ((InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton) && m_pSkillTreeWidget->IsInHeldMode())
+  {
+    m_bIsMouseHeld = false;
+    if (m_pRoundProgressBar != nullptr)
+    {
+      m_pRoundProgressBar->SetVisibility(ESlateVisibility::Hidden);
+    }
+    FTSTicker::GetCoreTicker().RemoveTicker(m_tHeldTickerHandle);
+  }
+  return FReply::Handled();
+}
+
+void USkillNodeWidget::HandleSelectSkill()
+{
+  if (m_pSkillTreeWidget != nullptr)
+  {
+    if (m_tState == ENodeState::Selected)
+    {
+      m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
+      m_pSkillTreeWidget->PlaySound(ESoundType::Deselect);
+    }
+    else if (m_pSkillTreeWidget->IsThereEnoughtPoints(m_iSkillCost))
+    {
+      m_pSkillTreeWidget->ModifyAvailablePoints(-m_iSkillCost);
+      m_pSkillTreeWidget->PlaySound(ESoundType::Select);
+    }
+    else
+    {
+      m_pSkillTreeWidget->SetFeedbackText(FText::FromString("There isn't enought points to acquire the skill."));
+      m_pSkillTreeWidget->PlaySound(ESoundType::Error);
+    }
+  }
+  m_tState = (m_tState == ENodeState::Selected) ? ENodeState::Focused : ENodeState::Selected;
+  UpdateVisualState();
+  OnLockNode.Broadcast(m_tState != ENodeState::Selected);
+}
+
+bool USkillNodeWidget::HandleAcquireSkill(float _fDeltaTime)
+{
+  bool bReturn = false;
+  if (m_bIsMouseHeld && (m_pSkillTreeWidget != nullptr))
+  {
+    double dCurrentTime = FPlatformTime::Seconds();
+    if ((m_pRoundProgressBar != nullptr) && (m_pSkillTreeWidget->GetHeldTime() > 0))
+    {
+      float fPercent = (dCurrentTime - m_dMouseDownTime) / m_pSkillTreeWidget->GetHeldTime();
+      m_pRoundProgressBar->SetVisibility(ESlateVisibility::Visible);
+      m_pRoundProgressBar->GetDynamicMaterial()->SetScalarParameterValue("Percent", fPercent);
+    }
+    if ((dCurrentTime - m_dMouseDownTime) >= m_pSkillTreeWidget->GetHeldTime())
+    {
+      m_pSkillTreeWidget->ModifyAvailablePoints(-m_iSkillCost);
+      m_pSkillTreeWidget->PlaySound(ESoundType::Confirm);
+      AcquireSkill();
+      OnLockNode.Broadcast(false);
+      m_bIsMouseHeld = false;
+      m_pRoundProgressBar->SetVisibility(ESlateVisibility::Hidden);
+      FTSTicker::GetCoreTicker().RemoveTicker(m_tHeldTickerHandle);
+    }
+    else
+    {
+      bReturn = true;
+    }
+  }
+  return bReturn;
+}
+
 void USkillNodeWidget::DeselectNode()
 {
   m_tState = ENodeState::UnFocused;
-  m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
+  if (m_pSkillTreeWidget != nullptr)
+  {
+    m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
+  }
   UpdateVisualState();
   OnLockNode.Broadcast(true);
 }
@@ -177,14 +251,18 @@ void USkillNodeWidget::UpdateVisualState()
 
 void USkillNodeWidget::SetNodeLocked(bool _bIsLocked)
 {
-  if (_bIsLocked && (m_tState == ENodeState::Selected))
-  {
-    m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
-  }
-  m_tState = _bIsLocked ? ENodeState::Locked : ENodeState::UnFocused;
   if (_bIsLocked)
   {
+    if ((m_tState == ENodeState::Selected) && (m_pSkillTreeWidget != nullptr))
+    {
+      m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
+    }
+    m_tState = ENodeState::Locked;
     OnLockNode.Broadcast(_bIsLocked);
+  }
+  else
+  {
+    m_tState = (m_tState == ENodeState::Selected) ? ENodeState::Selected : ENodeState::UnFocused;
   }
   UpdateVisualState();
 }

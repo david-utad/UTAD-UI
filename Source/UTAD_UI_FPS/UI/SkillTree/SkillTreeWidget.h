@@ -71,12 +71,23 @@ public:
    */
   void PlaySound(ESoundType _eType);
 
+  /**
+   * It return if the skill tree is in held mode. 
+   */
+  bool IsInHeldMode();
+
+  /**
+   * It returns the necessary time to held the button to acquire the skill. 
+   */
+  double GetHeldTime();
+
 protected:
 
   /**
    * Widget functions.
    */
   virtual void NativeConstruct() override;
+  virtual void NativeDestruct() override;
 
 private:
 
@@ -127,12 +138,6 @@ private:
   UTextBlock* m_pPointsValueText;
 
   /**
-   * The skill branch children in the tree.
-   */
-  UPROPERTY(VisibleAnywhere, Category = "Skill Tree", meta = (DisplayName = "Skill Branches"))
-  TArray<class USkillBranchWidget*> m_lSkillBranch;
-
-  /**
    * The button to acquire all the selected skills.
    */
   UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Confirm Button", BindWidget))
@@ -155,6 +160,23 @@ private:
    */
   UPROPERTY(EditAnywhere, Category = "Skill Tree", meta = (DisplayName = "Sound Map"))
   TMap<ESoundType, USoundBase*> m_mSound;
+
+  /**
+   * It is the necessary time to held the button to acquire the skill.
+   */
+  UPROPERTY(EditAnywhere, Category = "Skill Tree", meta = (DisplayName = "Held time"))
+  double m_dHeldTime;
+
+  /**
+   * If it is checked the held mode is active and the skill nodes can't be selected, only acquired.
+   */
+  UPROPERTY(EditAnywhere, Category = "Skill Tree", meta = (DisplayName = "Held mode"))
+  bool m_bHeldMode;
+
+  /**
+   * The skill branch children in the tree.
+   */
+  TArray<class USkillBranchWidget*> m_lSkillBranch;
 
   /**
    * Timer to hide the feedback text.

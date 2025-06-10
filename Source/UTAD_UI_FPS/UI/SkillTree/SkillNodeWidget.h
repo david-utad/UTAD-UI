@@ -10,6 +10,7 @@
 #include "SkillNodeWidget.generated.h"
 
 class USkillTreeWidget;
+class UImage;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLockNode, bool /* _bLocked */);
 
@@ -84,6 +85,7 @@ protected:
   virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
   virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
   virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+  virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	
 private:
 
@@ -97,6 +99,18 @@ private:
    * @param _bIsLocked parameter to lock/unlock the node.
    */
   void SetNodeLocked(bool _bIsLocked);
+
+  /**
+   * It selects or deselect the focused skill.
+   */
+  void HandleSelectSkill();
+
+  /**
+   * It acquires the skill if the button is held.
+   * @param _fDeltaTime time passed since the last tick.
+   * @return true if the timer still alive. False when the time ends.
+   */
+  bool HandleAcquireSkill(float _fDeltaTime);
 
   /**
    * The reference to the tree skill parent.
@@ -126,13 +140,19 @@ private:
    * It is the node image in the widget.
    */
   UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Image", BindWidget))
-  class UImage* m_pSkillImage;
+  UImage* m_pSkillImage;
 
   /**
    * It is the text for the skill cost.
    */
   UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Point cost Text", BindWidget))
   class UTextBlock* m_pSkillCostText;
+
+  /**
+   * It is the round progress bar for the hel mode.
+   */
+  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Roun Porgress Bar", BindWidget))
+  UImage* m_pRoundProgressBar;
 
   /**
    * It is the cost in points to acquire the skill.
@@ -151,4 +171,19 @@ private:
    */
   UPROPERTY(EditAnywhere, Category = "Skill Node", meta = (DisplayName = "Points cost"))
   int32 m_iSkillCost;
+
+  /**
+   * Timer to acquire the skill.
+   */
+  FTSTicker::FDelegateHandle m_tHeldTickerHandle;
+
+  /**
+   * Time passed with the button pressed.
+   */
+  double m_dMouseDownTime;
+
+  /**
+   * True if the button is held.
+   */
+  bool m_bIsMouseHeld;
 };
