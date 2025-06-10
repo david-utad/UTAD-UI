@@ -56,29 +56,26 @@ void USkillNodeWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 FReply USkillNodeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-  if (m_pSkillTreeWidget != nullptr)
+  if ((m_pSkillTreeWidget != nullptr) && (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton))
   {
     if ((m_tState != ENodeState::Locked) && (m_tState != ENodeState::Acquired))
     {
-      if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+      if (!m_pSkillTreeWidget->IsInHeldMode())
       {
-        if (!m_pSkillTreeWidget->IsInHeldMode())
+        HandleSelectSkill();
+      }
+      else
+      {
+        if (m_pSkillTreeWidget->IsThereEnoughtPoints(m_iSkillCost))
         {
-          HandleSelectSkill();
+          m_dMouseDownTime = FPlatformTime::Seconds();
+          m_bIsMouseHeld = true;
+          m_tHeldTickerHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &USkillNodeWidget::HandleAcquireSkill));
         }
         else
         {
-          if (m_pSkillTreeWidget->IsThereEnoughtPoints(m_iSkillCost))
-          {
-            m_dMouseDownTime = FPlatformTime::Seconds();
-            m_bIsMouseHeld = true;
-            m_tHeldTickerHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &USkillNodeWidget::HandleAcquireSkill));
-          }
-          else
-          {
-            m_pSkillTreeWidget->SetFeedbackText(FText::FromString("There isn't enought points to acquire the skill."));
-            m_pSkillTreeWidget->PlaySound(ESoundType::Error);
-          }
+          m_pSkillTreeWidget->SetFeedbackText(FText::FromString("There isn't enought points to acquire the skill."));
+          m_pSkillTreeWidget->PlaySound(ESoundType::Error);
         }
       }
     }

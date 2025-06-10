@@ -131,10 +131,7 @@ void USkillTreeWidget::ConfirmSkills()
   PlaySound(ESoundType::Confirm);
   for (USkillBranchWidget* pSkillBranch : m_lSkillBranch)
   {
-    if (pSkillBranch != nullptr)
-    {
-      pSkillBranch->AcquireSkills();
-    }
+    pSkillBranch->AcquireSkills();
   }
 }
 
