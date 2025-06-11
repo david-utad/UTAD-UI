@@ -34,7 +34,7 @@ void USkillBranchWidget::SetupBranch(USkillTreeWidget* _pSkillTree)
   }
 }
 
-void USkillBranchWidget::DeselectNodes()
+void USkillBranchWidget::ConfirmSkills(bool _bAcquire)
 {
   USkillNodeWidget* pSkillNode = nullptr;
   for (const TPair<FName, USkillNodeWidget*>& oPair : m_mSkillNode)
@@ -42,20 +42,14 @@ void USkillBranchWidget::DeselectNodes()
     pSkillNode = oPair.Value;
     if (pSkillNode->GetNodeState() == ENodeState::Selected)
     {
-      pSkillNode->DeselectNode();
-    }
-  }
-}
-
-void USkillBranchWidget::AcquireSkills()
-{
-  USkillNodeWidget* pSkillNode = nullptr;
-  for (const TPair<FName, USkillNodeWidget*>& oPair : m_mSkillNode)
-  {
-    pSkillNode = oPair.Value;
-    if (pSkillNode->GetNodeState() == ENodeState::Selected)
-    {
-      pSkillNode->AcquireSkill();
+      if (_bAcquire)
+      {
+        pSkillNode->AcquireSkill();
+      }
+      else
+      {
+        pSkillNode->DeselectNode();
+      }
     }
   }
 }

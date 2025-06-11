@@ -25,14 +25,10 @@ public:
   void SetupBranch(USkillTreeWidget* _pSkillTree);
 
   /**
-   * It deselects all selected skill nodes.
+   * It acquires / deselects all the selected skills.
+   * @param _bAcquire if true, it will acquire all the nodes, else, it will deselect all the nodes.
    */
-  void DeselectNodes();
-
-  /**
-   * It acquires all the selected skills.
-   */
-  void AcquireSkills();
+  void ConfirmSkills(bool _bAcquire);
 
 protected:
 

@@ -74,7 +74,7 @@ void USkillTreeWidget::Hide()
   {
     if (pSkillBranch != nullptr)
     {
-      pSkillBranch->DeselectNodes();
+      pSkillBranch->ConfirmSkills(false);
     }
   }
 
@@ -131,7 +131,7 @@ void USkillTreeWidget::ConfirmSkills()
   PlaySound(ESoundType::Confirm);
   for (USkillBranchWidget* pSkillBranch : m_lSkillBranch)
   {
-    pSkillBranch->AcquireSkills();
+    pSkillBranch->ConfirmSkills(true);
   }
 }
 
