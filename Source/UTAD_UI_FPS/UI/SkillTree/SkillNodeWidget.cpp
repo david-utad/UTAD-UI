@@ -222,22 +222,22 @@ void USkillNodeWidget::UpdateVisualState()
     {
       case ENodeState::Focused:
         {
-          tColor = FLinearColor(1.0f, 1.0f, 0.5f, 1.0f); // Yellow
+          tColor = FLinearColor(1.0f, 1.0f, 0.5f, 1.0f);
         }
         break;
       case ENodeState::Selected:
         {
-          tColor = FLinearColor(0.f, 0.5f, 1.0f, 1.0f); // Blue
+          tColor = FLinearColor(0.f, 0.5f, 1.0f, 1.0f);
         }
         break;
       case ENodeState::Acquired:
         {
-          tColor = FLinearColor(0.f, 1.0f, 0.5f, 1.0f); // Green
+          tColor = FLinearColor(0.f, 1.0f, 0.5f, 1.0f);
         }
         break;
       case ENodeState::Locked:
         {
-          tColor = FLinearColor(0.25f, 0.25f, 0.25f, 1.0f); // Grey
+          tColor = FLinearColor(0.25f, 0.25f, 0.25f, 1.0f);
         }
         break;
       default:
