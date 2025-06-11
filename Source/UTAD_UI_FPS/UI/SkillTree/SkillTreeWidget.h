@@ -110,49 +110,49 @@ private:
   /**
    * The panel of the widget.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Panel", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Panel", BindWidget))
   class UCanvasPanel* m_pPanel;
 
   /**
    * The background image of the panel.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Background Image", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Background Image", BindWidget))
   class UImage* m_pBackgroundImage;
 
   /**
    * The title of the panel.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Title", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Title", BindWidget))
   UTextBlock* m_pTitleText;
 
   /**
    * The text to show the available points.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Points Text", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Points Text", BindWidget))
   UTextBlock* m_pPointsText;
 
   /**
    * The text to show the available points value.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Points Value Text", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Points Value Text", BindWidget))
   UTextBlock* m_pPointsValueText;
 
   /**
    * The button to acquire all the selected skills.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Confirm Button", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Confirm Button", BindWidget))
   UButton* m_pConfirmButton;
 
   /**
    * The button to close the skill tree screen and deselect all the skills.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Close Button", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Close Button", BindWidget))
   UButton* m_pCloseButton;
 
   /**
    * The feedback text when something wrong is happened.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Tree", meta = (DisplayName = "Feedback Text", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Feedback Text", BindWidget))
   UTextBlock* m_pFeedbackText;
 
   /**

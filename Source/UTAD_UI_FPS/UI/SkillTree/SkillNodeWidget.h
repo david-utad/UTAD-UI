@@ -18,9 +18,9 @@ UENUM()
 enum class ESkillType : uint8
 {
   None UMETA(DisplayName = "None"),
-  Movement UMETA(DisplayName = "Movement"),
+  Velocity UMETA(DisplayName = "Velocity"),
   Health UMETA(DisplayName = "Health"),
-  Damage UMETA(DisplayName = "Damage")
+  Power UMETA(DisplayName = "Power")
 };
 
 UENUM()
@@ -115,7 +115,7 @@ private:
   /**
    * The reference to the tree skill parent.
    */
-  UPROPERTY(VisibleAnywhere, Category = "Skill Node", meta = (DisplayName = "Skill Tree"))
+  UPROPERTY(meta = (DisplayName = "Skill Tree"))
   USkillTreeWidget* m_pSkillTreeWidget;
 
   /**
@@ -133,43 +133,55 @@ private:
   /**
    * The panel of the widget.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Panel", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Panel", BindWidget))
   class UCanvasPanel* m_pPanel;
 
   /**
    * It is the node image in the widget.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Image", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Image", BindWidget))
   UImage* m_pSkillImage;
+
+  /**
+   * It is the node skill type image in the widget.
+   */
+  UPROPERTY(meta = (DisplayName = "Skill Type Image", BindWidget))
+  UImage* m_pSkillTypeImage;
+
+  /**
+   * It is the texture to draw in the skill type Image.
+   */
+  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Skill Type Texture"))
+  UTexture2D* m_pSkillTypeTexture;
 
   /**
    * It is the text for the skill cost.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Point cost Text", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Point cost Text", BindWidget))
   class UTextBlock* m_pSkillCostText;
 
   /**
    * It is the round progress bar for the hel mode.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Roun Porgress Bar", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Round Porgress Bar", BindWidget))
   UImage* m_pRoundProgressBar;
 
   /**
    * It is the cost in points to acquire the skill.
    */
-  UPROPERTY(EditAnywhere, Category = "Skill Node", meta = (DisplayName = "Type"))
+  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Type"))
   ESkillType m_tType;
 
   /**
    * It is the node state.
    */
-  UPROPERTY(VisibleAnywhere, Category = "Skill Node", meta = (DisplayName = "State"))
+  UPROPERTY(meta = (DisplayName = "State"))
   ENodeState m_tState;
 
   /**
    * It is the cost in points to adquire the skill.
    */
-  UPROPERTY(EditAnywhere, Category = "Skill Node", meta = (DisplayName = "Points cost"))
+  UPROPERTY(EditInstanceOnly, Category = "Skill Node", meta = (DisplayName = "Points cost"))
   int32 m_iSkillCost;
 
   /**

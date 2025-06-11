@@ -17,6 +17,20 @@ void USkillNodeWidget::NativeConstruct()
   {
     m_pRoundProgressBar->SetVisibility(ESlateVisibility::Hidden);
   }
+  if (m_pSkillTypeImage != nullptr)
+  {
+    if (m_pSkillTypeTexture != nullptr)
+    {
+      FSlateBrush tBrush;
+      tBrush.SetResourceObject(m_pSkillTypeTexture);
+      m_pSkillTypeImage->SetBrush(tBrush);
+      m_pSkillTypeImage->SetVisibility(ESlateVisibility::Visible);
+    }
+    else
+    {
+      m_pSkillTypeImage->SetVisibility(ESlateVisibility::Hidden);
+    }
+  }
 }
 
 void USkillNodeWidget::SetupNode(USkillTreeWidget* _pSkillTree, USkillNodeWidget* _pParent)
@@ -116,11 +130,13 @@ void USkillNodeWidget::HandleSelectSkill()
   {
     if (m_tState == ENodeState::Selected)
     {
+      m_tState = ENodeState::Focused;
       m_pSkillTreeWidget->ModifyAvailablePoints(m_iSkillCost);
       m_pSkillTreeWidget->PlaySound(ESoundType::Deselect);
     }
     else if (m_pSkillTreeWidget->IsThereEnoughtPoints(m_iSkillCost))
     {
+      m_tState = ENodeState::Selected;
       m_pSkillTreeWidget->ModifyAvailablePoints(-m_iSkillCost);
       m_pSkillTreeWidget->PlaySound(ESoundType::Select);
     }
@@ -130,7 +146,6 @@ void USkillNodeWidget::HandleSelectSkill()
       m_pSkillTreeWidget->PlaySound(ESoundType::Error);
     }
   }
-  m_tState = (m_tState == ENodeState::Selected) ? ENodeState::Focused : ENodeState::Selected;
   UpdateVisualState();
   OnLockNode.Broadcast(m_tState != ENodeState::Selected);
 }

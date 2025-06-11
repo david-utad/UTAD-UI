@@ -46,19 +46,19 @@ private:
   /**
    * The panel of the widget.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Branch", meta = (DisplayName = "Panel", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Panel", BindWidget))
   class UCanvasPanel* m_pPanel;
 
   /**
    * The background image of the panel.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Branch", meta = (DisplayName = "Background Image", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Background Image", BindWidget))
   class UImage* m_pBackgroundImage;
 
   /**
    * The title of the panel.
    */
-  UPROPERTY(EditInstanceOnly, Category = "Skill Branch", meta = (DisplayName = "Title", BindWidget))
+  UPROPERTY(meta = (DisplayName = "Title", BindWidget))
   class UTextBlock* m_pTitleText;
 
   /**
